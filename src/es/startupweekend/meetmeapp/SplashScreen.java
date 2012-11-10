@@ -1,4 +1,6 @@
-package com.example.meetmeapp;
+package es.startupweekend.meetmeapp;
+import com.example.meetmeapp.R;
+
 import es.startupweekened.preferences.MeetMePreferences;
 import android.os.Bundle;
 import android.os.Handler;
