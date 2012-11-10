@@ -1,10 +1,12 @@
-package com.example.meetmeapp;
+package es.startupweekend.meetmeapp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.example.meetmeapp.R;
 
 import es.startupweekened.preferences.MeetMePreferences;
 
