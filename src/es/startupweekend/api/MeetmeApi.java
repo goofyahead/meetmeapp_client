@@ -38,29 +38,13 @@ public class MeetmeApi implements MeetmeApiInterface{
     private String TAG = MeetmeApi.class.getName();
     private String API_URL = "http://elchudi.xen.prgmr.com:8090";
     
-    
-    
-    
     private String GET_USERS = API_URL + "/get_users";
     private String GET_USER = API_URL + "/get_user";
     private String GET_CONNECTIONS = API_URL + "/get_connections";
     private String ADD_CONNECTION = API_URL + "/add_connection";
     private String ADD_USER = API_URL + "/add_user";
-    
-    
-    
-//    @Inject
-//    private PiggyBankPreferences prefs;
-
     protected static final String JSON_TYPE = "application/json";
     protected static final String XML_TYPE = "text/xml";
-
-//    private static final String KEY_TOKEN = "token";
-//    private static final String KEY_AMOUNT = "amount";
-//    private static final String KEY_TELEPHONE = "telephone";
-//    private static final String KEY_ACCOUNT_NUMBER  = "account_number";
-//    private static final String KEY_ACCOUNT_NUMBER_FROM_BANK = "account_number_from_bank";
-//    private static final String KEY_AMOUNT_NEDDED  = "amount_needed";
     
     private static final String KEY_USER_ID  = "user_id";
     private static final String KEY_EXTRA_DATA  = "extra_data";
@@ -69,7 +53,6 @@ public class MeetmeApi implements MeetmeApiInterface{
     private static final String KEY_USER_TYPE  = "user_type";
     private static final String KEY_USER_1  = "user_1";
     private static final String KEY_USER_2  = "user_2";
-//    private static final String KEY_NAME  = "name";
     
     private static final int BUFFERSIZE = 1024;
     private String CONTENT = "Content-Type";
@@ -283,15 +266,7 @@ public class MeetmeApi implements MeetmeApiInterface{
     @Override
     public List<User> getUsers() {
         List<User> to_ret = new ArrayList<User>();
-//        String[] userKeys = { KEY_USER_ID};
-////        String[] userValues = { userId};
-//        JSONObject userJson = null;
-//        try {
-//            userJson = createJsonFromParams(userKeys, userValues);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        StringEntity entity = new StringEntity("not needde?");
+
         HttpResponse response = callApi(GET_USERS, getBasicHeaders(), HttpRequestType.get, null, false);
 
         if (response.getStatusLine().getStatusCode() == 200) {
@@ -302,14 +277,12 @@ public class MeetmeApi implements MeetmeApiInterface{
                     JSONObject o = (JSONObject) array.get(i);
                     User u = new User(o.getString(KEY_USER_ID), o.getString(KEY_NAME), o.getString(KEY_USER_TYPE), o.getString(KEY_IMG), o.getString(KEY_EXTRA_DATA), null);
                     to_ret.add(u);
-                        
-                    
                 }
             } catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-         
+
             return to_ret;
         } else {
             return to_ret;
@@ -334,16 +307,12 @@ public class MeetmeApi implements MeetmeApiInterface{
         if (response.getStatusLine().getStatusCode() == 200) {
             JSONObject o = getResponseInfo(response);
             try {
-                
                     u = new User(o.getString(KEY_USER_ID), o.getString(KEY_NAME), o.getString(KEY_USER_TYPE), o.getString(KEY_IMG), o.getString(KEY_EXTRA_DATA), null);
-                        
-                    
                 }
              catch (JSONException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-         
             return u;
         } else {
             return u;
