@@ -5,12 +5,16 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
-import com.example.meetmeapp.R;
+import es.startupweekend.meetmeapp.R;
 
+import es.startupweekend.api.MeetmeApi;
+import es.startupweekend.api.MeetmeApiInterface;
 import es.startupweekened.preferences.MeetMePreferences;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -27,6 +31,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
@@ -38,6 +43,9 @@ public class RegisterActivity extends Activity {
     protected static final int ACTION_CODE = 1;
     private ImageView takePicture;
     private Button register;
+    private EditText name;
+    private EditText extra;
+    private Spinner spinner;
     private File f;
 
     @Override
@@ -47,7 +55,9 @@ public class RegisterActivity extends Activity {
 
         takePicture = (ImageView) findViewById(R.id.imageView1);
         register = (Button) findViewById(R.id.register_button);
-        Spinner spinner = (Spinner) findViewById(R.id.spinner1);
+        spinner = (Spinner) findViewById(R.id.spinner1);
+        name = (EditText) findViewById(R.id.name);
+        extra = (EditText) findViewById(R.id.extra);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.categories,
                 android.R.layout.simple_spinner_item);
@@ -62,7 +72,6 @@ public class RegisterActivity extends Activity {
                 try {
                     f = createImageFile();
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -77,18 +86,37 @@ public class RegisterActivity extends Activity {
             public void onClick(View v) {
 
                 Bitmap bm = BitmapFactory.decodeFile(f.getAbsolutePath());
-                Bitmap scaled = Bitmap.createScaledBitmap(bm, 400, 400, true);
+                Bitmap scaled = Bitmap.createScaledBitmap(bm, 200, 200, true);
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
-                scaled.compress(Bitmap.CompressFormat.JPEG, 100, output);
+                scaled.compress(Bitmap.CompressFormat.PNG, 70, output);
                 byte[] bytes = output.toByteArray();
-                String base64Image = Base64.encodeToString(bytes, Base64.NO_WRAP);
+                final String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
 
                 Log.d(TAG, "Image is: " + base64Image);
 
-                // call with name, type, phone, image, etc
-                MeetMePreferences mPreferences = new MeetMePreferences(getApplicationContext());
-                mPreferences.setUserRegistered(true);
-                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                new AsyncTask<Void, Void, Void>() {
+                    
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        MeetMePreferences mPreferences = new MeetMePreferences(getApplicationContext());
+                        mPreferences.setUserRegistered(true);
+                        startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                        finish();
+                        super.onPostExecute(result);
+                    }
+
+                    @Override
+                    protected Void doInBackground(Void... params) {
+                        Random rand = new Random();
+                        MeetmeApiInterface api = new MeetmeApi();
+                        api.registerUser(String.valueOf(rand.nextInt(Integer.MAX_VALUE)), 
+                                name.getText().toString(), 
+                                spinner.getSelectedItem().toString(),
+                                base64Image, 
+                                extra.getText().toString() );
+                        return null;
+                    }
+                }.execute();
             }
         });
     }

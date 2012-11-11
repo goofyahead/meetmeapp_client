@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories_none">
+        <item>none</item>
+        <item>Developer</item>
+        <item>Business</item>
+        <item>Designer</item>
+        <item>Marketing</item>
+        <item>Creative</item>
+        <item>Sponsor</item>
+        <item>Judge</item>
+    </string-array>
+</resources>
