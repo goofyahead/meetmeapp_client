@@ -9,13 +9,13 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:src="@drawable/chiquitito" />
-
+
     <ImageView
         android:id="@+id/contacted"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="45dp"
         android:layout_alignRight="@id/picture"
-        android:src="@drawable/ic_launcher" />
+        android:src="@drawable/conectado" />
 
     <FrameLayout
         android:id="@+id/overlay"

@@ -3,13 +3,16 @@ package es.startupweekend.adapters;
 import java.util.LinkedList;
 import java.util.List;
 
+import es.startupweekend.api.MeetmeApi;
 import es.startupweekend.meetmeapp.R;
 
 import es.startupweekend.model.User;
+import es.startupweekened.preferences.MeetMePreferences;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +22,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
-    private static List<User> personasOriginal;
-    private static List<User> filtered = new LinkedList<User>();
+    private List<User> personasOriginal;
+    private List<User> filtered = new LinkedList<User>();
     private LayoutInflater layoutInflater;
+    private MeetmeApi api;
+    MeetMePreferences prefs;
+
+    public List<User> getPersonas() {
+        return personasOriginal;
+    }
 
     public ImageAdapter(List<User> personas, Context context) {
+        api = new MeetmeApi();
+        prefs = new MeetMePreferences(context);
         this.personasOriginal = personas;
         for (User user : personasOriginal) {
             filtered.add(user);
@@ -65,15 +76,44 @@ public class ImageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        final int positionEvent = position;
         View pictureHolder = layoutInflater.inflate(R.layout.image_detail, null);
         ImageView picture = (ImageView) pictureHolder.findViewById(R.id.picture);
-        ImageView contacted = (ImageView) pictureHolder.findViewById(R.id.contacted);
+        final ImageView contacted = (ImageView) pictureHolder.findViewById(R.id.contacted);
         TextView category = (TextView) pictureHolder.findViewById(R.id.category);
         TextView name = (TextView) pictureHolder.findViewById(R.id.name);
 
         picture.setImageBitmap(getBitmapFromBase64(filtered.get(position).getImageRaw()));
         category.setText(filtered.get(position).getCategory());
         name.setText(filtered.get(position).getName());
+        contacted.setVisibility(View.INVISIBLE);
+
+        new AsyncTask<Void, Void, Void>() {
+            private List<String> connections;
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                String id = prefs.getUserId();
+                connections = api.getConnections(prefs.getUserId());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void result) {
+                filtered.get(positionEvent).setConnected(false);
+                for (String idu : connections) {
+                    if (filtered.get(positionEvent).getUserId().equals(idu)) {
+                        filtered.get(positionEvent).setConnected(true);
+                    }
+                }
+
+                if (filtered.get(positionEvent).getConnected() == true) {
+                    contacted.setVisibility(View.VISIBLE);
+                }
+                super.onPostExecute(result);
+            }
+
+        }.execute();
         return pictureHolder;
     }
 
