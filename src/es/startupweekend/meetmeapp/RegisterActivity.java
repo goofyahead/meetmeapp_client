@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
@@ -38,7 +37,7 @@ import android.widget.Spinner;
 public class RegisterActivity extends Activity {
 
     private static final String JPEG_FILE_PREFIX = "pre";
-    private static final String JPEG_FILE_SUFFIX = "jpg";
+    private static final String JPEG_FILE_SUFFIX = ".jpg";
     private static final String TAG = RegisterActivity.class.getName();
     protected static final int ACTION_CODE = 1;
     private ImageView takePicture;
@@ -46,7 +45,7 @@ public class RegisterActivity extends Activity {
     private EditText name;
     private EditText extra;
     private Spinner spinner;
-    private File f;
+    private static File f;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -86,20 +85,23 @@ public class RegisterActivity extends Activity {
             public void onClick(View v) {
 
                 Bitmap bm = BitmapFactory.decodeFile(f.getAbsolutePath());
-                Bitmap scaled = Bitmap.createScaledBitmap(bm, 200, 200, true);
+                Bitmap scaled = Bitmap.createScaledBitmap(bm, 240, 240, true);
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
-                scaled.compress(Bitmap.CompressFormat.PNG, 70, output);
+                scaled.compress(Bitmap.CompressFormat.PNG, 50, output);
                 byte[] bytes = output.toByteArray();
                 final String base64Image = Base64.encodeToString(bytes, Base64.DEFAULT);
 
                 Log.d(TAG, "Image is: " + base64Image);
 
                 new AsyncTask<Void, Void, Void>() {
+                    private String randomPick;
                     
                     @Override
                     protected void onPostExecute(Void result) {
                         MeetMePreferences mPreferences = new MeetMePreferences(getApplicationContext());
                         mPreferences.setUserRegistered(true);
+                        mPreferences.setUserName(name.getText().toString());
+                        mPreferences.setUserId(randomPick);
                         startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                         finish();
                         super.onPostExecute(result);
@@ -107,9 +109,10 @@ public class RegisterActivity extends Activity {
 
                     @Override
                     protected Void doInBackground(Void... params) {
-                        Random rand = new Random();
                         MeetmeApiInterface api = new MeetmeApi();
-                        api.registerUser(String.valueOf(rand.nextInt(Integer.MAX_VALUE)), 
+                        Random rand = new Random(System.currentTimeMillis());
+                        randomPick = String.valueOf(rand.nextInt(Integer.MAX_VALUE));
+                        api.registerUser(randomPick, 
                                 name.getText().toString(), 
                                 spinner.getSelectedItem().toString(),
                                 base64Image, 
