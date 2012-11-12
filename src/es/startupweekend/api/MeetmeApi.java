@@ -331,7 +331,7 @@ public class MeetmeApi implements MeetmeApiInterface{
           e.printStackTrace();
       }
       StringEntity entity = createJSONRequestForRegister(userKeys, userValues);
-      HttpResponse response = callApi(ADD_CONNECTION, getBasicHeaders(), HttpRequestType.get, entity, false);
+      HttpResponse response = callApi(ADD_CONNECTION, getBasicHeaders(), HttpRequestType.post, entity, false);
 
       if (response.getStatusLine().getStatusCode() == 200) {
           

@@ -13,6 +13,7 @@ public class User {
     private String imageRaw;
     private String extraData;
     private Bitmap bitmap;
+    private boolean connected = false;
     private List<String> connections;
     public static final int PIGGY_TYPE_SAVING = 0;
     public static final int PIGGY_TYPE_OBJETIVE = 1;
@@ -21,6 +22,14 @@ public class User {
     public static final int PIGGY_TYPE_CAIXA = 4;
     public static final int PIGGY_TYPE_OTHER = 5;
 
+    public boolean getConnected () {
+        return connected;
+    }
+ 
+    public void setConnected (boolean connected) {
+        this.connected = connected;
+    }
+ 
     public String getName() {
         return name;
     }
